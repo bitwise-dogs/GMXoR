@@ -1,17 +1,15 @@
 import { useState } from 'react';
-import provider from "../../shared/provider";
+import {ethers} from 'ethers'
 
 function WalletConnect() {
   const [connected, setConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
 
-  // Функция для подключения кошелька
   async function connectWallet() {
     if (!connected) {
       // Проверяем, что window.ethereum доступен
       if (typeof window.ethereum !== 'undefined') {
         try {
-          // Запрашиваем доступ к аккаунтам у пользователя
           const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
 
           // Проверяем, что хотя бы один аккаунт доступен
@@ -22,9 +20,10 @@ function WalletConnect() {
             const account = accounts[0];
             setWalletAddress(account);
 
-            // Проверяем, что у нас есть доступ к signer
+            const provider = new ethers.BrowserProvider(window.ethereum)
             const signer = await provider.getSigner();
             const _walletAddress = await signer.getAddress();
+            
 
             console.log("Signer address:", _walletAddress);
 
@@ -41,8 +40,7 @@ function WalletConnect() {
         alert('MetaMask is not installed. Please install MetaMask and try again.');
       }
     } else {
-      // Отключаем кошелек
-      // Просто сбрасываем состояние
+
       setConnected(false);
       setWalletAddress("");
     }

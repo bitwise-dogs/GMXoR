@@ -1,7 +1,5 @@
 import { ethers } from 'ethers';
 
-const provider = typeof window !== "undefined" && window.ethereum
-  ? new ethers.BrowserProvider(window.ethereum)
-  : null;
-
+const provider = new ethers.JsonRpcProvider('https://arb1.arbitrum.io/rpc')
+  
 export default provider;
