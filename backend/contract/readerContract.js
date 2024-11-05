@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import provider from '../provider';  // Импорт провайдера
-import reader from '../../ABIs/ReaderAbi.json'
+import reader from '../ABI/ReaderAbi.json'
  
 
 const ADDRESS = reader.address;
