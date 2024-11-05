@@ -10,6 +10,6 @@ beforeAll(() => {
 
 test('renders without crashing', () => {
   render(<App />);
-  // Базовая проверка наличия текста или элемента
+  //Проверка наличия кнопки connectWallet
   expect(screen.getByText(/Connect Wallet/i)).toBeInTheDocument();
 });
