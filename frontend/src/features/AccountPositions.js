@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
-import {ethers} from 'ethers'
+import {ethers} from 'ethers';
+import {account, datastore} from '../entities/index';
 
 const ActivePositions = () => {
   const [result, setResult] = useState(null);
@@ -22,10 +23,6 @@ const ActivePositions = () => {
       const signer = await provider.getSigner()
       const _walletAddress = await signer.getAddress(); 
 
-
-
-      const datastore = '0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8'  
-      const account = '0x591b6F096281DD7b645767C96aC34863A4Df9a89' //На проде юзать _walletAddress. Это акк левого чела, у которого есть открытые позиции
       const start = 0 
       const end = 10 
       const data = await contract.getAccountPositions(datastore, account, start, end);
