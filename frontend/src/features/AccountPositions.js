@@ -7,7 +7,7 @@ function ActivePositions(props) {
   const [positions, setPositions] = useState([[]]);
   var positionsData = [];  
   var datastore = props.datastore;
-  var account = props.account;
+  var account =   props.account;
 
   const resultPositions =   
     positions.map((element, index) => {
@@ -68,7 +68,7 @@ function ActivePositions(props) {
 
   useEffect(() => {
     fetchContractData();
-  }, []);
+  }, [account]);
 
   useEffect(() => {
     (async () => {
