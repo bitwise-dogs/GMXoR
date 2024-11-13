@@ -4,6 +4,7 @@ import {ethers} from 'ethers';
 
 function ActivePositions(props) {
   const [result, setResult] = useState(null);
+  const [ordersResult, setOrdersResult] = useState(null);
   const [positions, setPositions] = useState([[]]);
   var positionsData = [];  
   var datastore = props.datastore;
@@ -27,6 +28,7 @@ function ActivePositions(props) {
       const start = 0 
       const end = 10 
       const data = await contract.getAccountPositions(datastore, account, start, end);
+      const ordersData = await contract.getAccountOrders(datastore, account, start, end);
 
     /**
      * Вывод функции getAccountPosition:
@@ -59,6 +61,7 @@ function ActivePositions(props) {
      */
 
       setResult(data);
+      setOrdersResult(ordersData);
       
     } catch (error) {
       console.error("Ошибка вызова контракта:", error);
@@ -86,6 +89,8 @@ function ActivePositions(props) {
             }
         }
       }
+      
+    console.log(ordersResult);
     })()
   }, [result]);
 
@@ -106,6 +111,8 @@ function ActivePositions(props) {
     <div>
       <h2>Открытые позиции</h2>
       <div>{resultPositions}</div>
+      <h2>Активные ордеры</h2>
+      {ordersResult ? <p>{ordersResult.toString()}</p> : <p>Загрузка...</p>}
     </div>
   );
 };
