@@ -6,13 +6,21 @@ function ActivePositions(props) {
   const [result, setResult] = useState(null);
   const [ordersResult, setOrdersResult] = useState(null);
   const [positions, setPositions] = useState([[]]);
+  const [orders, setOrders] = useState([[]]);
   var positionsData = [];  
+  var ordersData = [];
   var datastore = props.datastore;
   var account =   props.account;
 
   const resultPositions =   
     positions.map((element, index) => {
       return <p key={index}>{element[1] + " position - " + element[0]}</p>;
+    }
+  );
+
+  const resultOrders =   
+    orders.map((element, index) => {
+      return <p key={index}>{element[0] + ". order type - " + element[1]}</p>;
     }
   );
 
@@ -96,6 +104,23 @@ function ActivePositions(props) {
 
   useEffect(() => {
     (async () => {
+      if(ordersResult){
+        for(let i=0; i<ordersResult.length; i++){
+          ordersData.push([]);
+
+            let balance = ordersResult[i][1][2].toString();
+            ordersData[i].push(balance.slice(0,-30) + "." + balance.slice(-30, -28)  + "  $");
+
+            ordersData[i].push(ordersResult[i][1][0].toString());
+        }
+      }
+      
+    console.log(ordersResult);
+    })()
+  }, [ordersResult]);
+
+  useEffect(() => {
+    (async () => {
       if(positionsData.length > 0){
         let positions_copy = [];
         positionsData.forEach(el => {
@@ -106,13 +131,25 @@ function ActivePositions(props) {
     })()
   }, [positionsData]);
 
+  useEffect(() => {
+    (async () => {
+      if(ordersData.length > 0){
+        let orders_copy = [];
+        ordersData.forEach(el => {
+          orders_copy.push(el);
+        });
+        setOrders(orders_copy);
+      }
+    })()
+  }, [ordersData]);
+
 
   return (
     <div>
       <h2>Открытые позиции</h2>
       <div>{resultPositions}</div>
       <h2>Активные ордеры</h2>
-      {ordersResult ? <p>{ordersResult.toString()}</p> : <p>Загрузка...</p>}
+      {ordersResult ? <p>{resultOrders}</p> : <p>Загрузка...</p>}
     </div>
   );
 };
