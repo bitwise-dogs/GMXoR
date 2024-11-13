@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import {ethers} from 'ethers';
-import {account, datastore} from '../entities/index';
 
-const ActivePositions = () => {
+function ActivePositions(props) {
   const [result, setResult] = useState(null);
   const [positions, setPositions] = useState([[]]);
   var positionsData = [];  
+  var datastore = props.datastore;
+  var account = props.account;
 
   const resultPositions =   
     positions.map((element, index) => {
@@ -28,7 +29,7 @@ const ActivePositions = () => {
       const data = await contract.getAccountPositions(datastore, account, start, end);
 
     /**
-     * Вывод функции getAccountPositions:
+     * Вывод функции getAccountPosition:
      *
      * Каждая позиция включает следующие компоненты:
      *
