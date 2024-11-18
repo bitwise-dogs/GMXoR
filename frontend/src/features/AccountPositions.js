@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Position from "../shared/AccountUnits/Position";
+import getTokenName from "../shared/scripts/getTokenName";
 
 function AccountPositions(props) {
-  const [positionsDataRaw, setPositionsDataRaw] = useState([]);
+  const [positionsDataRaw, setPositionsDataRaw] = useState(null);
   const [positions, setPositions] = useState([[]]);
-  var positionsDataFormatted = [];
-  var datastore = props.datastore;
-  var account = props.account;
+  const [tokensNames, setTokensNames] = useState(null);
+
+  let positionsDataFormatted = [];
+  let datastore = props.datastore;
+  let account = props.account;
 
   const resultPositions = positions.map((element, index) => {
     return <Position key={index} element={element} index={index} />;
@@ -58,10 +61,43 @@ function AccountPositions(props) {
           } else {
             positionsDataFormatted[i].push("long");
           }
+
+          positionsDataFormatted[i].push("");
         }
       }
     })();
   }, [positionsDataRaw]);
+
+  useEffect(() => {
+    (async () => {
+      if (positionsDataRaw) {
+        let tokensNamesCopy = [];
+        for (let i = 0; i < positionsDataRaw.length; i++) {
+          tokensNamesCopy.push(await getTokenName(positionsDataRaw[i][0][1]));
+        }
+        setTokensNames(tokensNamesCopy);
+      }
+    })();
+  }, [positionsDataRaw]);
+
+  useEffect(() => {
+    (() => {
+      if (tokensNames) {
+        if (positions) {
+          let positions_copy = [];
+          let position_copy = [];
+
+          for (let i = 0; i < positions.length; i++) {
+            position_copy = positions[i].slice();
+            position_copy[2] = tokensNames[i];
+            positions_copy.push(position_copy);
+          }
+
+          setPositions(positions_copy);
+        }
+      }
+    })();
+  }, [tokensNames]);
 
   useEffect(() => {
     (async () => {
@@ -84,32 +120,3 @@ function AccountPositions(props) {
 }
 
 export default AccountPositions;
-/**
- * Вывод функции getAccountPosition:
- *
- * Каждая позиция включает следующие компоненты:
- *
- * 1. **addresses**:
- *    - **account**: Адрес аккаунта, владеющего позицией.
- *    - **market**: Адрес рынка, на котором открыта позиция.
- *    - **collateralToken**: Адрес токена, используемого в качестве залога для позиции.
- *
- * 2. **numbers**:
- *    - **sizeInUsd**: Размер позиции в долларах.
- *    - **sizeInTokens**: Размер позиции в токенах.
- *    - **collateralAmount**: Сумма залога, используемого для данной позиции.
- *    - **borrowingFactor**: Фактор займа, указывающий, сколько можно занять против залога.
- *    - **fundingFeeAmountPerSize**: Сумма комиссии за финансирование на единицу размера позиции.
- *    - **longTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по длинной позиции.
- *    - **shortTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по короткой позиции.
- *    - **increasedAtBlock**: Блок, в котором была увеличена позиция.
- *    - **decreasedAtBlock**: Блок, в котором была уменьшена позиция.
- *    - **increasedAtTime**: Время увеличения позиции (в формате Unix timestamp).
- *    - **decreasedAtTime**: Время уменьшения позиции (в формате Unix timestamp).
- *
- * 3. **flags**:
- *    - **isLong**: Указывает, является ли позиция длинной (true) или короткой (false).
- *
- * Эти данные могут быть использованы для анализа позиций аккаунта на конкретном рынке
- * и для отображения информации о позиции на пользовательском интерфейсе.
- */
