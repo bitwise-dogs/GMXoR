@@ -1,80 +1,41 @@
 import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
-import {ethers} from 'ethers';
+import { ethers } from "ethers";
+import Position from "../shared/AccountUnits/Position";
 
-function ActivePositions(props) {
-  const [result, setResult] = useState(null);
-  const [ordersResult, setOrdersResult] = useState(null);
+function AccountPositions(props) {
+  const [positionsDataRaw, setPositionsDataRaw] = useState([]);
   const [positions, setPositions] = useState([[]]);
-  const [orders, setOrders] = useState([[]]);
-  var positionsData = [];  
-  var ordersData = [];
+  var positionsDataFormatted = [];
   var datastore = props.datastore;
-  var account =   props.account;
+  var account = props.account;
 
-  const resultPositions =   
-    positions.map((element, index) => {
-      return <p key={index}>{element[1] + " position - " + element[0]}</p>;
-    }
-  );
-
-  const resultOrders =   
-    orders.map((element, index) => {
-      return <p key={index}>{element[0] + ". order type - " + element[1]}</p>;
-    }
-  );
+  const resultPositions = positions.map((element, index) => {
+    return <Position key={index} element={element} index={index} />;
+  });
 
   const fetchContractData = async () => {
-
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });  //аккаунты юзера (проверка через MetaMask)
-      const provider = new ethers.BrowserProvider(window.ethereum)
-      const userAccount = accounts[0]; 
-      const signer = await provider.getSigner()
-      const _walletAddress = await signer.getAddress(); 
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const _walletAddress = await signer.getAddress();
 
-      const start = 0 
-      const end = 10 
-      const data = await contract.getAccountPositions(datastore, account, start, end);
-      const ordersData = await contract.getAccountOrders(datastore, account, start, end);
+      const start = 0;
+      const end = 10;
+      const data = await contract.getAccountPositions(
+        datastore,
+        account,
+        start,
+        end
+      );
 
-    /**
-     * Вывод функции getAccountPosition:
-     *
-     * Каждая позиция включает следующие компоненты:
-     *
-     * 1. **addresses**: 
-     *    - **account**: Адрес аккаунта, владеющего позицией.
-     *    - **market**: Адрес рынка, на котором открыта позиция.
-     *    - **collateralToken**: Адрес токена, используемого в качестве залога для позиции.
-     *
-     * 2. **numbers**: 
-     *    - **sizeInUsd**: Размер позиции в долларах.
-     *    - **sizeInTokens**: Размер позиции в токенах.
-     *    - **collateralAmount**: Сумма залога, используемого для данной позиции.
-     *    - **borrowingFactor**: Фактор займа, указывающий, сколько можно занять против залога.
-     *    - **fundingFeeAmountPerSize**: Сумма комиссии за финансирование на единицу размера позиции.
-     *    - **longTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по длинной позиции.
-     *    - **shortTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по короткой позиции.
-     *    - **increasedAtBlock**: Блок, в котором была увеличена позиция.
-     *    - **decreasedAtBlock**: Блок, в котором была уменьшена позиция.
-     *    - **increasedAtTime**: Время увеличения позиции (в формате Unix timestamp).
-     *    - **decreasedAtTime**: Время уменьшения позиции (в формате Unix timestamp).
-     *
-     * 3. **flags**:
-     *    - **isLong**: Указывает, является ли позиция длинной (true) или короткой (false). 
-     *
-     * Эти данные могут быть использованы для анализа позиций аккаунта на конкретном рынке 
-     * и для отображения информации о позиции на пользовательском интерфейсе.
-     */
-
-      setResult(data);
-      setOrdersResult(ordersData);
-      
+      setPositionsDataRaw(data);
     } catch (error) {
       console.error("Ошибка вызова контракта:", error);
     }
-    
   };
 
   useEffect(() => {
@@ -83,75 +44,72 @@ function ActivePositions(props) {
 
   useEffect(() => {
     (async () => {
-      if(result){
-        for(let i=0; i<result.length; i++){
-          positionsData.push([]);
+      if (positionsDataRaw) {
+        for (let i = 0; i < positionsDataRaw.length; i++) {
+          positionsDataFormatted.push([]);
 
-            let balance = result[i][1][0].toString();
-            positionsData[i].push(balance.slice(0,-30) + "." + balance.slice(-30, -28)  + "  $");
+          let balance = positionsDataRaw[i][1][0].toString();
+          positionsDataFormatted[i].push(
+            balance.slice(0, -30) + "." + balance.slice(-30, -28) + "  $"
+          );
 
-            if(result[0][2][0]==false){
-              positionsData[i].push("short");
-            } else{
-              positionsData[i].push("long");
-            }
+          if (positionsDataRaw[0][2][0] == false) {
+            positionsDataFormatted[i].push("short");
+          } else {
+            positionsDataFormatted[i].push("long");
+          }
         }
       }
-      
-    console.log(ordersResult);
-    })()
-  }, [result]);
+    })();
+  }, [positionsDataRaw]);
 
   useEffect(() => {
     (async () => {
-      if(ordersResult){
-        for(let i=0; i<ordersResult.length; i++){
-          ordersData.push([]);
-
-            let balance = ordersResult[i][1][2].toString();
-            ordersData[i].push(balance.slice(0,-30) + "." + balance.slice(-30, -28)  + "  $");
-
-            ordersData[i].push(ordersResult[i][1][0].toString());
-        }
-      }
-      
-    console.log(ordersResult);
-    })()
-  }, [ordersResult]);
-
-  useEffect(() => {
-    (async () => {
-      if(positionsData.length > 0){
+      if (positionsDataFormatted.length > 0) {
         let positions_copy = [];
-        positionsData.forEach(el => {
+        positionsDataFormatted.forEach((el) => {
           positions_copy.push(el);
         });
         setPositions(positions_copy);
       }
-    })()
-  }, [positionsData]);
-
-  useEffect(() => {
-    (async () => {
-      if(ordersData.length > 0){
-        let orders_copy = [];
-        ordersData.forEach(el => {
-          orders_copy.push(el);
-        });
-        setOrders(orders_copy);
-      }
-    })()
-  }, [ordersData]);
-
+    })();
+  }, [positionsDataFormatted]);
 
   return (
     <div>
       <h2>Открытые позиции</h2>
-      <div>{resultPositions}</div>
-      <h2>Активные ордеры</h2>
-      {ordersResult ? <p>{resultOrders}</p> : <p>Загрузка...</p>}
+      {positionsDataRaw ? <ol>{resultPositions}</ol> : <p>Загрузка...</p>}
     </div>
   );
-};
+}
 
-export default ActivePositions;
+export default AccountPositions;
+/**
+ * Вывод функции getAccountPosition:
+ *
+ * Каждая позиция включает следующие компоненты:
+ *
+ * 1. **addresses**:
+ *    - **account**: Адрес аккаунта, владеющего позицией.
+ *    - **market**: Адрес рынка, на котором открыта позиция.
+ *    - **collateralToken**: Адрес токена, используемого в качестве залога для позиции.
+ *
+ * 2. **numbers**:
+ *    - **sizeInUsd**: Размер позиции в долларах.
+ *    - **sizeInTokens**: Размер позиции в токенах.
+ *    - **collateralAmount**: Сумма залога, используемого для данной позиции.
+ *    - **borrowingFactor**: Фактор займа, указывающий, сколько можно занять против залога.
+ *    - **fundingFeeAmountPerSize**: Сумма комиссии за финансирование на единицу размера позиции.
+ *    - **longTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по длинной позиции.
+ *    - **shortTokenClaimableFundingAmountPerSize**: Сумма, которую можно получить по короткой позиции.
+ *    - **increasedAtBlock**: Блок, в котором была увеличена позиция.
+ *    - **decreasedAtBlock**: Блок, в котором была уменьшена позиция.
+ *    - **increasedAtTime**: Время увеличения позиции (в формате Unix timestamp).
+ *    - **decreasedAtTime**: Время уменьшения позиции (в формате Unix timestamp).
+ *
+ * 3. **flags**:
+ *    - **isLong**: Указывает, является ли позиция длинной (true) или короткой (false).
+ *
+ * Эти данные могут быть использованы для анализа позиций аккаунта на конкретном рынке
+ * и для отображения информации о позиции на пользовательском интерфейсе.
+ */
