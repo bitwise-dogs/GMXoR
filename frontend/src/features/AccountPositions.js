@@ -32,6 +32,8 @@ function AccountPositions(props) {
         end
       );
 
+      console.log(resultPositions);
+
       setPositionsDataRaw(data);
     } catch (error) {
       console.error("Ошибка вызова контракта:", error);
@@ -76,7 +78,7 @@ function AccountPositions(props) {
   }, [positionsDataFormatted]);
 
   return (
-    <div>
+    <div className="block">
       <h2>Открытые позиции</h2>
       {positionsDataRaw ? <ol>{resultPositions}</ol> : <p>Загрузка...</p>}
     </div>

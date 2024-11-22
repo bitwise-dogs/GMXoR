@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {ethers} from 'ethers'
+import Button from '@mui/material/Button';
 
 function WalletConnect() {
   const [connected, setConnected] = useState(false);
@@ -47,16 +48,12 @@ function WalletConnect() {
   }
 
   return (
-    <div className="walletConnect">
-      <div className="main">
-        <div className="content">
-          <button className="btn" onClick={connectWallet}>
-            {connected ? "Disconnect Wallet" : "Connect Wallet"}
-          </button>
-          <h3>Address</h3>
-          <h4 className="wal-add">{walletAddress}</h4>
-        </div>
-      </div>
+    <div className='header'>
+      <h2>GMX Analytics</h2>
+      <h4 className="wal-add">{walletAddress}</h4>
+      <Button className="btn" onClick={connectWallet} variant="outlined" color='#e7e7ec'>
+        {connected ? "Disconnect Wallet" : "Connect Wallet"}
+      </Button>
     </div>
   );
 }

@@ -73,7 +73,7 @@ function AccountOrders(props) {
   }, [ordersDataFormatted]);
 
   return (
-    <div>
+    <div className="block">
       <h2>Активные ордеры</h2>
       {ordersDataRaw ? <ol>{resultOrders}</ol> : <p>Загрузка...</p>}
     </div>
