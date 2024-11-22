@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import provider from "../provider";
+import getMarket from "./getMarket";
 
-const getTokenName = async (address) => {
+const getTokenName = async (marketAddress) => {
   let abi = [
     {
       inputs: [],
@@ -57,9 +58,12 @@ const getTokenName = async (address) => {
     },
   ];
 
-  const tokenAddress = address;
-  const contract = new ethers.Contract(tokenAddress, abi, provider);
-  const symbol = await contract.name();
+  const datastore = "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8";
+  const market = await getMarket(datastore, marketAddress);
+
+  const marketIndexToken = market[2];
+  const contract = new ethers.Contract(marketIndexToken, abi, provider);
+  const symbol = await contract.symbol();
 
   return symbol;
 };
