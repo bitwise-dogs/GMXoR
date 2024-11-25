@@ -32,7 +32,7 @@ function AccountPositions(props) {
         end
       );
 
-      console.log(resultPositions);
+      console.log(positions);
 
       setPositionsDataRaw(data);
     } catch (error) {
@@ -79,8 +79,19 @@ function AccountPositions(props) {
 
   return (
     <div className="block">
-      <h2>Открытые позиции</h2>
-      {positionsDataRaw ? <ol>{resultPositions}</ol> : <p>Загрузка...</p>}
+      <h2>Open positions</h2>
+      {positionsDataRaw ? 
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Position type</th>
+              <th>Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultPositions}
+          </tbody>
+        </table> : <p>Загрузка...</p>}
     </div>
   );
 }
