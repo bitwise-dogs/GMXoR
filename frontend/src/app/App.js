@@ -6,10 +6,18 @@ import styles from '../App.css';
 
 function App() {
   return (
-    <div className='main_container'>
-      <div className='container'>
+    <div>
+      <div className='header_wrapper'>
         <HeaderComponent />
-        <HomePage />
+      </div>
+      <div className='main_container'>
+        <div className='container'>
+          {/* <HeaderComponent /> */}
+          <HomePage />
+          <HomePage />
+          <HomePage />
+          <HomePage />
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import WalletConnect from '../features/wallet/WalletConnect';
 
 function HeaderComponent() {
   return (
-    <div className="header_wrapper">
+    <div className="header">
         <WalletConnect />
     </div>
   );

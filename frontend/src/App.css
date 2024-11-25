@@ -7,10 +7,8 @@
 body {
   font-family: "Libre Franklin", sans-serif;
   font-weight: 300;
-  /* color: #e7e7ec; */
   color: #dbe0e6;
   font-style: normal;
-  /* background-color: #313131; */
   background-color: #040D12;
 }
 
@@ -19,25 +17,39 @@ body {
   flex-flow: column;
   justify-content: center;
   align-items: center;
+  padding-top: 80px;
 }
 
 .container {
   width: 80%;
 }
 
+.header_wrapper {
+  width: 80%;
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 10%;
+}
+
 .header {
+  display: flex;
+  justify-content: center;
+  padding: 5px 25px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  background-color: #183D3D;
+  -webkit-box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
+  -moz-box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
+  box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
+}
+
+.header_content {
+  width: 100%;
   display: flex;
   flex-flow: row;
   justify-content: space-between;
   align-items: center;
-}
-
-.header_wrapper {
-  /* position: fixed;
-  z-index: 100; */
-  padding: 5px 25px;
-  border-radius: 25px;
-  background-color: #183D3D;
 }
 
 .input {

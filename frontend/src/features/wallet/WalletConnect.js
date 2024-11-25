@@ -48,7 +48,7 @@ function WalletConnect() {
   }
 
   return (
-    <div className='header'>
+    <div className='header_content'>
       <h2>GMX Analytics</h2>
       <h4 className="wal-add">{walletAddress}</h4>
       <Button className="btn" onClick={connectWallet} variant="outlined" color='#e7e7ec'>
