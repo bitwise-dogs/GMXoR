@@ -3,7 +3,6 @@ import { useId, useState } from "react";
 import AccountPositions from "../features/AccountPositions";
 import AccountOrders from "../features/AccountOrders";
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 
 const UserAnalytics = () => {
   const datastore = "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8";
