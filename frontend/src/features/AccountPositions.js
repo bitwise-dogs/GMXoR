@@ -17,15 +17,8 @@ function AccountPositions(props) {
     return <Position key={index} element={element} index={index} />;
   });
 
-  const fetchContractData = async () => {
+  const fetchAccountPositions = async () => {
     try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const _walletAddress = await signer.getAddress();
-
       const start = 0;
       const end = 10;
       const data = await contract.getAccountPositions(
@@ -42,7 +35,7 @@ function AccountPositions(props) {
   };
 
   useEffect(() => {
-    fetchContractData();
+    fetchAccountPositions();
   }, [account]);
 
   useEffect(() => {
@@ -112,9 +105,21 @@ function AccountPositions(props) {
   }, [positionsDataFormatted]);
 
   return (
-    <div>
-      <h2>Открытые позиции</h2>
-      {positionsDataRaw ? <ol>{resultPositions}</ol> : <p>Загрузка...</p>}
+    <div className="block">
+      <h2>Open positions</h2>
+      {positionsDataRaw ? 
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Position type</th>
+              <th>Size</th>
+              <th>Market</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultPositions}
+          </tbody>
+        </table> : <p>Загрузка...</p>}
     </div>
   );
 }

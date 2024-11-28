@@ -4,7 +4,11 @@ const Position = (props) => {
   let index = props.index;
   let element = props.element;
 
-  return <li key={index}>{element[1] + " position - " + element[0] + " " + element[2]}</li>;
+  return <tr key={index}>
+      <td>{element[1]}</td>
+      <td>{element[0]}</td>
+      <td>{element[2]}</td>
+    </tr>;
 };
 
 export default Position;

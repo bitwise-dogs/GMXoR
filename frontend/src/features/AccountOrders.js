@@ -14,15 +14,8 @@ function AccountOrders(props) {
     return <Order key={index} element={element} index={index} />;
   });
 
-  const fetchContractData = async () => {
+  const fetchAccountOrders = async () => {
     try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const _walletAddress = await signer.getAddress();
-
       const start = 0;
       const end = 10;
 
@@ -40,7 +33,7 @@ function AccountOrders(props) {
   };
 
   useEffect(() => {
-    fetchContractData();
+    fetchAccountOrders();
   }, [account]);
 
   useEffect(() => {
@@ -73,9 +66,20 @@ function AccountOrders(props) {
   }, [ordersDataFormatted]);
 
   return (
-    <div>
-      <h2>Активные ордеры</h2>
-      {ordersDataRaw ? <ol>{resultOrders}</ol> : <p>Загрузка...</p>}
+    <div className="block">
+      <h2>Active orders</h2>
+      {ordersDataRaw ? 
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Size</th>
+              <th>Order type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultOrders}
+          </tbody>
+        </table> : <p>Загрузка...</p>}
     </div>
   );
 }
