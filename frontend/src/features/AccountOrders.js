@@ -14,15 +14,8 @@ function AccountOrders(props) {
     return <Order key={index} element={element} index={index} />;
   });
 
-  const fetchContractData = async () => {
+  const fetchAccountOrders = async () => {
     try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const _walletAddress = await signer.getAddress();
-
       const start = 0;
       const end = 10;
 
@@ -40,7 +33,7 @@ function AccountOrders(props) {
   };
 
   useEffect(() => {
-    fetchContractData();
+    fetchAccountOrders();
   }, [account]);
 
   useEffect(() => {

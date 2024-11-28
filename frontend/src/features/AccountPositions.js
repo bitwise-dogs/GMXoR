@@ -2,27 +2,23 @@ import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Position from "../shared/AccountUnits/Position";
+import getTokenName from "../shared/scripts/getTokenName";
 
 function AccountPositions(props) {
-  const [positionsDataRaw, setPositionsDataRaw] = useState([]);
+  const [positionsDataRaw, setPositionsDataRaw] = useState(null);
   const [positions, setPositions] = useState([[]]);
-  var positionsDataFormatted = [];
-  var datastore = props.datastore;
-  var account = props.account;
+  const [tokensNames, setTokensNames] = useState(null);
+
+  let positionsDataFormatted = [];
+  let datastore = props.datastore;
+  let account = props.account;
 
   const resultPositions = positions.map((element, index) => {
     return <Position key={index} element={element} index={index} />;
   });
 
-  const fetchContractData = async () => {
+  const fetchAccountPositions = async () => {
     try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const _walletAddress = await signer.getAddress();
-
       const start = 0;
       const end = 10;
       const data = await contract.getAccountPositions(
@@ -32,8 +28,6 @@ function AccountPositions(props) {
         end
       );
 
-      console.log(positions);
-
       setPositionsDataRaw(data);
     } catch (error) {
       console.error("Ошибка вызова контракта:", error);
@@ -41,7 +35,7 @@ function AccountPositions(props) {
   };
 
   useEffect(() => {
-    fetchContractData();
+    fetchAccountPositions();
   }, [account]);
 
   useEffect(() => {
@@ -60,10 +54,43 @@ function AccountPositions(props) {
           } else {
             positionsDataFormatted[i].push("long");
           }
+
+          positionsDataFormatted[i].push("");
         }
       }
     })();
   }, [positionsDataRaw]);
+
+  useEffect(() => {
+    (async () => {
+      if (positionsDataRaw) {
+        let tokensNamesCopy = [];
+        for (let i = 0; i < positionsDataRaw.length; i++) {
+          tokensNamesCopy.push(await getTokenName(positionsDataRaw[i][0][1]));
+        }
+        setTokensNames(tokensNamesCopy);
+      }
+    })();
+  }, [positionsDataRaw]);
+
+  useEffect(() => {
+    (() => {
+      if (tokensNames) {
+        if (positions) {
+          let positions_copy = [];
+          let position_copy = [];
+
+          for (let i = 0; i < positions.length; i++) {
+            position_copy = positions[i].slice();
+            position_copy[2] = tokensNames[i];
+            positions_copy.push(position_copy);
+          }
+
+          setPositions(positions_copy);
+        }
+      }
+    })();
+  }, [tokensNames]);
 
   useEffect(() => {
     (async () => {
@@ -86,6 +113,7 @@ function AccountPositions(props) {
             <tr>
               <th>Position type</th>
               <th>Size</th>
+              <th>Market</th>
             </tr>
           </thead>
           <tbody>
