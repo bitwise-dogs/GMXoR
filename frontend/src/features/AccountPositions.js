@@ -105,9 +105,21 @@ function AccountPositions(props) {
   }, [positionsDataFormatted]);
 
   return (
-    <div>
-      <h2>Открытые позиции</h2>
-      {positionsDataRaw ? <ol>{resultPositions}</ol> : <p>Загрузка...</p>}
+    <div className="block">
+      <h2>Open positions</h2>
+      {positionsDataRaw ? 
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Position type</th>
+              <th>Size</th>
+              <th>Market</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultPositions}
+          </tbody>
+        </table> : <p>Загрузка...</p>}
     </div>
   );
 }
