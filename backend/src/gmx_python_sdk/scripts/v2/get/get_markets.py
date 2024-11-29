@@ -69,7 +69,7 @@ class Markets:
         return reader_contract.functions.getMarkets(
             data_store_contract_address,
             0,
-            50
+            100
         ).call()
 
     def _process_markets(self):

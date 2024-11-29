@@ -192,13 +192,18 @@ def getData(config, wallet_address=None, market_address=None):
     position_keys = datastore_obj.functions.getBytes32ValuesAt(hex_data, 0, 1000).call()
     
     reader_obj = get_reader_contract(config)
-
-    account_positions_list_raw = reader_obj.functions.getAccountPositionInfoList(
-            "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8", "0xe6fab3F0c7199b0d34d7FbE83394fc0e0D06e99d", [position_keys[0]], output, wallet_address).call()
-
-    account_positions_list = transform_to_dict(account_positions_list_raw)
     
-    return account_positions_list
+    positions_dict = {}
+
+    for i in range(len(position_keys)):      
+        account_positions_list_raw = reader_obj.functions.getAccountPositionInfoList(
+            "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8", "0xe6fab3F0c7199b0d34d7FbE83394fc0e0D06e99d", [position_keys[i]], output, wallet_address).call()
+
+        account_positions_list = transform_to_dict(account_positions_list_raw)
+        
+        positions_dict[str(i)] = account_positions_list
+    
+    return positions_dict
 
 # if __name__=="__main__":
     
