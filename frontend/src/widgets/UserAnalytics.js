@@ -8,7 +8,7 @@ const UserAnalytics = () => {
   const datastore = "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8";
   /* const [account, setAccount] = useState('0x591b6F096281DD7b645767C96aC34863A4Df9a89'); */
   const [account, setAccount] = useState(
-    "0x78083780E6cD929E10bD6fB2a099bA00b3142621"
+    "0x49A323CC2fa5F9A138f30794B9348e43065D8dA2"
   );
   const id = useId();
   const [input, setInput] = useState(account);

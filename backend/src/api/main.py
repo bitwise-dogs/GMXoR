@@ -36,7 +36,8 @@ data_obj = GetData(config=config, use_local_datastore=False,
                        filter_swap_markets=True)
 
 def transform_to_dict(account_positions_list):
-    result = []
+    # result = []
+    
     for pos in account_positions_list:
         # Unpack the components of each position
         position, referral, fees, base_pnl_usd, uncapped_base_pnl_usd, pnl_after_price_impact_usd = pos
@@ -172,8 +173,9 @@ def transform_to_dict(account_positions_list):
         # print("\n", position_dict["position"]["numbers"]["sizeInUsd"])
         # print("\n basePnlUsd", position_dict["basePnlUsd"], " \n   uncappedBasePnlUsd", position_dict["uncappedBasePnlUsd"],
         #       "\n pnlAfterPriceImpactUsd", position_dict["pnlAfterPriceImpactUsd"], "\n")
-        result.append(position_dict)
-    return result
+        # result.append(position_dict)
+        return(position_dict)
+    # return result
 
 
 def getData(config, wallet_address=None, market_address=None):
