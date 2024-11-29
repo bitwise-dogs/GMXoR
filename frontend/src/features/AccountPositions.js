@@ -36,10 +36,8 @@ function AccountPositions(props) {
   };
   const fetchUpdAccountPositions = async () => {
     try {
-      
       const updatedData = await axios.get(`http://127.0.0.1:8000/${account}`);
 
-      
       setUpdPositionsDataRaw(updatedData);
     } catch (error) {
       console.error("Ошибка вызова server:", error);
@@ -56,6 +54,20 @@ function AccountPositions(props) {
 
   useEffect(() => {
     console.log(updPositionsDataRaw);
+    if (positions && updPositionsDataRaw) {
+      let positions_copy = [];
+      let position_copy = [];
+      for (let i = 0; i < positions.length; i++) {
+        position_copy = positions[i].slice();
+        position_copy[3] = updPositionsDataRaw["data"][i.toString()][
+          "basePnlUsd"
+        ]
+          .toString()
+          .slice(0,4);
+        positions_copy.push(position_copy);
+      }
+      setPositions(positions_copy);
+    }
   }, [updPositionsDataRaw]);
 
   useEffect(() => {
@@ -75,7 +87,8 @@ function AccountPositions(props) {
             positionsDataFormatted[i].push("long");
           }
 
-          positionsDataFormatted[i].push("");
+          positionsDataFormatted[i].push("Загрузка...");
+          positionsDataFormatted[i].push("Загрузка...");
         }
       }
     })();
@@ -127,8 +140,14 @@ function AccountPositions(props) {
   return (
     <div className="block">
       <h2>Open positions</h2>
-      {updPositionsDataRaw ? <div>PnL нулевой позиции (Base PnL in USD): {updPositionsDataRaw['data']['0']['basePnlUsd']}</div> : 
-      <p>Загрузка...</p>}
+      {/* {updPositionsDataRaw ? (
+        <div>
+          PnL нулевой позиции (Base PnL in USD):{" "}
+          {updPositionsDataRaw["data"]["0"]["basePnlUsd"]}
+        </div>
+      ) : (
+        <p>Загрузка...</p>
+      )} */}
       {positionsDataRaw ? (
         <table className="table">
           <thead>
