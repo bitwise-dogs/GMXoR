@@ -3,9 +3,11 @@ import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Position from "../shared/AccountUnits/Position";
 import getTokenName from "../shared/scripts/getTokenName";
+import axios from "axios";
 
 function AccountPositions(props) {
   const [positionsDataRaw, setPositionsDataRaw] = useState(null);
+  const [updPositionsDataRaw, setUpdPositionsDataRaw] = useState(null);
   const [positions, setPositions] = useState([[]]);
   const [tokensNames, setTokensNames] = useState(null);
 
@@ -27,16 +29,34 @@ function AccountPositions(props) {
         start,
         end
       );
-
       setPositionsDataRaw(data);
     } catch (error) {
       console.error("Ошибка вызова контракта:", error);
+    }
+  };
+  const fetchUpdAccountPositions = async () => {
+    try {
+      
+      const updatedData = await axios.get(`http://127.0.0.1:8000/${account}`);
+
+      
+      setUpdPositionsDataRaw(updatedData);
+    } catch (error) {
+      console.error("Ошибка вызова server:", error);
     }
   };
 
   useEffect(() => {
     fetchAccountPositions();
   }, [account]);
+
+  useEffect(() => {
+    fetchUpdAccountPositions();
+  }, [account]);
+
+  useEffect(() => {
+    console.log(updPositionsDataRaw);
+  }, [updPositionsDataRaw]);
 
   useEffect(() => {
     (async () => {
@@ -107,19 +127,23 @@ function AccountPositions(props) {
   return (
     <div className="block">
       <h2>Open positions</h2>
-      {positionsDataRaw ? 
+      {updPositionsDataRaw ? <div>PnL нулевой позиции (Base PnL in USD): {updPositionsDataRaw['data']['0']['basePnlUsd']}</div> : 
+      <p>Загрузка...</p>}
+      {positionsDataRaw ? (
         <table className="table">
           <thead>
             <tr>
               <th>Position type</th>
               <th>Size</th>
               <th>Market</th>
+              <th>PnL</th>
             </tr>
           </thead>
-          <tbody>
-            {resultPositions}
-          </tbody>
-        </table> : <p>Загрузка...</p>}
+          <tbody>{resultPositions}</tbody>
+        </table>
+      ) : (
+        <p>Загрузка...</p>
+      )}
     </div>
   );
 }
