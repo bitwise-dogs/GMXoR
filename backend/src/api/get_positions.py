@@ -161,8 +161,10 @@ if __name__ == "__main__":
 
     positions = get_positions(
         config=config,
-        address="0x0e9E19E7489E5F13a0940b3b6FcB84B25dc68177"
+        address="0x49A323CC2fa5F9A138f30794B9348e43065D8dA2"
     )
+    
+    print(positions)
 
     # market_symbol = "ETH"
     # is_long = True

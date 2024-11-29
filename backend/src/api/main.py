@@ -1,6 +1,7 @@
 
-
+import numpy as np
 import json
+from get_oracle_prices import OraclePrices
 
 from fastapi import FastAPI, HTTPException
 
@@ -28,7 +29,8 @@ from gmx_python_sdk.scripts.v2.get.get import GetData
 
 from decimal import Decimal
 
-config = ConfigManager(chain='arbitrum')
+chain = 'arbitrum'
+config = ConfigManager(chain)
 config.set_config()
 data_obj = GetData(config=config, use_local_datastore=False,
                        filter_swap_markets=True)
@@ -38,6 +40,37 @@ def transform_to_dict(account_positions_list):
     for pos in account_positions_list:
         # Unpack the components of each position
         position, referral, fees, base_pnl_usd, uncapped_base_pnl_usd, pnl_after_price_impact_usd = pos
+        
+        market_info = data_obj.markets.info[position[0][1]]
+
+        chain_tokens = get_tokens_address_dict(chain)
+
+        entry_price = (
+            position[1][0] / position[1][1]
+        ) / 10 ** (
+            30 - chain_tokens[market_info['index_token_address']]['decimals']
+        )
+
+        leverage = (
+            position[1][0] / 10 ** 30
+        ) / (
+            position[1][2] / 10 ** chain_tokens[
+                position[0][2]
+            ]['decimals']
+        )
+        prices = OraclePrices(chain=chain).get_recent_prices()
+        mark_price = np.median(
+            [
+                float(
+                    prices[market_info['index_token_address']]['maxPriceFull']
+                ),
+                float(
+                    prices[market_info['index_token_address']]['minPriceFull']
+                )
+            ]
+        ) / 10 ** (
+            30 - chain_tokens[market_info['index_token_address']]['decimals']
+        )
 
         position_dict = {
             "position": {
@@ -108,6 +141,33 @@ def transform_to_dict(account_positions_list):
             "basePnlUsd": base_pnl_usd,
             "uncappedBasePnlUsd": uncapped_base_pnl_usd,
             "pnlAfterPriceImpactUsd": pnl_after_price_impact_usd,
+            "percent_profit": (
+                (
+                    1 - (mark_price / entry_price)
+                ) * leverage
+            ) * -100,
+            "market_symbol": (
+                data_obj.markets.info[position[0][1]]['market_symbol'],
+            ),
+            "leverage": leverage,
+            "collateral_token": chain_tokens[position[0][2]]['symbol'],
+            "position_size": position[1][0] / 10**30,
+            "size_in_tokens": position[1][1],
+            "entry_price": (
+                (
+                    position[1][0] / position[1][1]
+                ) / 10 ** (
+                    30 - chain_tokens[
+                        market_info['index_token_address']
+                    ]['decimals']
+                )
+            ),
+            "inital_collateral_amount": position[1][2],
+            "inital_collateral_amount_usd": (
+                position[1][2]
+                / 10 ** chain_tokens[position[0][2]]['decimals'],
+            ),
+            "mark_price": mark_price
         }
         # print("\n", position_dict["position"]["numbers"]["sizeInUsd"])
         # print("\n basePnlUsd", position_dict["basePnlUsd"], " \n   uncappedBasePnlUsd", position_dict["uncappedBasePnlUsd"],
