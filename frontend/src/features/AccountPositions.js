@@ -59,11 +59,18 @@ function AccountPositions(props) {
       let position_copy = [];
       for (let i = 0; i < positions.length; i++) {
         position_copy = positions[i].slice();
-        position_copy[3] = updPositionsDataRaw["data"][i.toString()][
-          "basePnlUsd"
-        ]
-          .toString()
-          .slice(0,4);
+
+        const pnlSign =
+          updPositionsDataRaw["data"][i]["basePnlUsd"].toString()[0] === "-"
+            ? "-"
+            : "+";
+        position_copy[3] =
+          pnlSign +
+          updPositionsDataRaw["data"][i]["percent_profit"]
+            .toString()
+            .slice(0, 5) +
+          "%";
+
         positions_copy.push(position_copy);
       }
       setPositions(positions_copy);
