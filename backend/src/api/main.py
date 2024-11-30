@@ -4,6 +4,7 @@ import json
 from get_oracle_prices import OraclePrices
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from utils import _set_paths
 from web3 import Web3
@@ -210,6 +211,11 @@ def getData(config, wallet_address=None, market_address=None):
 # if __name__=="__main__":
     
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*']
+)
 
 @app.get("/{wallet}")
 def read_root(wallet):
