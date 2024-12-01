@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
-import { ethers } from "ethers";
 import Position from "../shared/AccountUnits/Position";
 import getTokenName from "../shared/scripts/getTokenName";
 import axios from "axios";
@@ -39,24 +38,17 @@ function AccountPositions(props) {
       console.error("Ошибка вызова контракта:", error);
     }
   };
-  const fetchUpdAccountPositions = async () => {
-    try {
-      const updatedData = await axios.get(
-        `http://127.0.0.1:8000/getPositionsData/${account}`
-      );
-
-      setUpdPositionsDataRaw(updatedData);
-    } catch (error) {
-      console.error("Ошибка вызова server:", error);
-    }
-  };
 
   useEffect(() => {
     fetchAccountPositions();
   }, [account]);
 
   useEffect(() => {
-    fetchUpdAccountPositions();
+    axios
+      .get(`http://127.0.0.1:8000/getPositionsData/${account}`)
+      .then((response) => {
+        setUpdPositionsDataRaw(response);
+      });
   }, [account]);
 
   useEffect(() => {
@@ -98,7 +90,7 @@ function AccountPositions(props) {
           let balance = positionsDataRaw[i][1][0].toString();
           positionsDataFormatted[i].push(formatRawPrice(balance));
 
-          if (positionsDataRaw[0][2][0] == false) {
+          if (positionsDataRaw[0][2][0] === false) {
             positionsDataFormatted[i].push("short");
           } else {
             positionsDataFormatted[i].push("long");
