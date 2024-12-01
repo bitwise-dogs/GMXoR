@@ -36,7 +36,9 @@ function AccountPositions(props) {
   };
   const fetchUpdAccountPositions = async () => {
     try {
-      const updatedData = await axios.get(`http://127.0.0.1:8000/${account}`);
+      const updatedData = await axios.get(
+        `http://127.0.0.1:8000/getPositionsData/${account}`
+      );
 
       setUpdPositionsDataRaw(updatedData);
     } catch (error) {

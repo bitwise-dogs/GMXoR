@@ -1,185 +1,213 @@
+
+import numpy as np
+import json
+from get_oracle_prices import OraclePrices
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 from utils import _set_paths
+from web3 import Web3
+import hashlib
+from hexbytes import HexBytes
 
 _set_paths()
 
-from decimal import Decimal
+
 
 from gmx_python_sdk.scripts.v2.get.get_markets import Markets
-
-from gmx_python_sdk.scripts.v2.get.get_open_positions import GetOpenPositions
 from gmx_python_sdk.scripts.v2.gmx_utils import (
-    ConfigManager, find_dictionary_by_key_value, get_tokens_address_dict,
-    determine_swap_route
-)
+    ConfigManager, get_reader_contract, get_datastore_contract,
+    get_tokens_address_dict)
+
+from gmx_python_sdk.scripts.v2.keys import (
+    min_collateral, accountPositionListKey,
+    max_position_impact_factor_for_liquidations_key,
+    min_collateral_factor_key)
 
 
-def get_positions(config, address: str = None):
-    """
-    Get open positions for an address on a given network.
-    If address is not passed it will take the address from the users config
-    file.
+from gmx_python_sdk.scripts.v2.get.get import GetData
 
-    Parameters
-    ----------
-    chain : str
-        arbitrum or avalanche.
-    address : str, optional
-        address to fetch open positions for. The default is None.
+from decimal import Decimal
 
-    Returns
-    -------
-    positions : dict
-        dictionary containing all open positions.
+chain = 'arbitrum'
+config = ConfigManager(chain)
+config.set_config()
+data_obj = GetData(config=config, use_local_datastore=False,
+                       filter_swap_markets=True)
 
-    """
-
-    if address is None:
-        address = config.user_wallet_address
-        if address is None:
-            raise Exception("No address passed in function or config!")
-
-    positions = GetOpenPositions(config=config, address=address).get_data()
-
-    if len(positions) > 0:
-        print("Open Positions for {}:".format(address))
-        for key in positions.keys():
-            print(key)
-
-    return positions
-
-
-def transform_open_position_to_order_parameters(
-    config,
-    positions: dict,
-    market_symbol: str,
-    is_long: bool,
-    slippage_percent: float,
-    out_token,
-    amount_of_position_to_close,
-    amount_of_collateral_to_remove
-):
-    """
-    Find the user defined trade from market_symbol and is_long in a dictionary
-    positions and return a dictionary formatted correctly to close 100% of
-    that trade
-
-    Parameters
-    ----------
-    chain : str
-        arbitrum or avalanche.
-    positions : dict
-        dictionary containing all open positions.
-    market_symbol : str
-        symbol of market trader.
-    is_long : bool
-        True for long, False for short.
-    slippage_percent : float
-        slippage tolerance to close trade as a percentage.
-
-    Raises
-    ------
-    Exception
-        If we can't find the requested trade for the user.
-
-    Returns
-    -------
-    dict
-        order parameters formatted to close the position.
-
-    """
-    direction = "short"
-    if is_long:
-        direction = "long"
-
-    position_dictionary_key = "{}_{}".format(
-        market_symbol.upper(),
-        direction
-    )
-
-    try:
-        raw_position_data = positions[position_dictionary_key]
-        gmx_tokens = get_tokens_address_dict(config.chain)
-
-        collateral_address = find_dictionary_by_key_value(
-            gmx_tokens,
-            "symbol",
-            raw_position_data['collateral_token']
-        )["address"]
-
-        gmx_tokens = get_tokens_address_dict(config.chain)
-
-        index_address = find_dictionary_by_key_value(
-            gmx_tokens,
-            "symbol",
-            raw_position_data['market_symbol'][0]
-        )
-        out_token_address = find_dictionary_by_key_value(
-            gmx_tokens,
-            "symbol",
-            out_token
-        )['address']
-        markets = Markets(config=config).info
-
-        swap_path = []
-
-        if collateral_address != out_token_address:
-            swap_path = determine_swap_route(
-                markets,
-                collateral_address,
-                out_token_address
-            )[0]
-        size_delta = int(int(
-            (Decimal(raw_position_data['position_size']) * (Decimal(10)**30))
-        ) * amount_of_position_to_close)
-
-        return {
-            "chain": config.chain,
-            "market_key": raw_position_data['market'],
-            "collateral_address": collateral_address,
-            "index_token_address": index_address["address"],
-            "is_long": raw_position_data['is_long'],
-            "size_delta": size_delta,
-            "initial_collateral_delta": int(int(
-                raw_position_data['inital_collateral_amount']
-            ) * amount_of_collateral_to_remove
-            ),
-            "slippage_percent": slippage_percent,
-            "swap_path": swap_path
-        }
-    except KeyError:
-        raise Exception(
-            "Couldn't find a {} {} for given user!".format(
-                market_symbol, direction
-            )
-        )
-
-
-if __name__ == "__main__":
-
-    config = ConfigManager(chain='arbitrum')
-    config.set_config()
-
-    positions = get_positions(
-        config=config,
-        address="0x49A323CC2fa5F9A138f30794B9348e43065D8dA2"
-    )
+def transform_to_dict(account_positions_list):
+    # result = []
     
-    print(positions)
+    for pos in account_positions_list:
+        # Unpack the components of each position
+        position, referral, fees, base_pnl_usd, uncapped_base_pnl_usd, pnl_after_price_impact_usd = pos
+        
+        market_info = data_obj.markets.info[position[0][1]]
 
-    # market_symbol = "ETH"
-    # is_long = True
+        chain_tokens = get_tokens_address_dict(chain)
 
-    # out_token = "USDC"
-    # amount_of_position_to_close = 1
-    # amount_of_collateral_to_remove = 1
+        entry_price = (
+            position[1][0] / position[1][1]
+        ) / 10 ** (
+            30 - chain_tokens[market_info['index_token_address']]['decimals']
+        )
 
-    # order_params = transform_open_position_to_order_parameters(
-    #     config=config,
-    #     positions=positions,
-    #     market_symbol=market_symbol,
-    #     is_long=is_long,
-    #     slippage_percent=0.003,
-    #     out_token="USDC",
-    #     amount_of_position_to_close=amount_of_position_to_close,
-    #     amount_of_collateral_to_remove=amount_of_collateral_to_remove
-    # )
+        leverage = (
+            position[1][0] / 10 ** 30
+        ) / (
+            position[1][2] / 10 ** chain_tokens[
+                position[0][2]
+            ]['decimals']
+        )
+        prices = OraclePrices(chain=chain).get_recent_prices()
+        mark_price = np.median(
+            [
+                float(
+                    prices[market_info['index_token_address']]['maxPriceFull']
+                ),
+                float(
+                    prices[market_info['index_token_address']]['minPriceFull']
+                )
+            ]
+        ) / 10 ** (
+            30 - chain_tokens[market_info['index_token_address']]['decimals']
+        )
+
+        position_dict = {
+            "position": {
+                "addresses": {
+                    "account": position[0][0],
+                    "market": position[0][1],
+                    "collateralToken": position[0][2],
+                },
+                "numbers": {
+                    "sizeInUsd": position[1][0],
+                    "sizeInTokens": position[1][1],
+                    "collateralAmount": position[1][2],
+                    "borrowingFactor": position[1][3],
+                    "fundingFeeAmountPerSize": position[1][4],
+                    "longTokenClaimableFundingAmountPerSize": position[1][5],
+                    "shortTokenClaimableFundingAmountPerSize": position[1][6],
+                    "increasedAtBlock": position[1][7],
+                    "decreasedAtBlock": position[1][8],
+                    "increasedAtTime": position[1][9],
+                    "decreasedAtTime": position[1][10],
+                },
+                "flags": {
+                    "isLong": position[2][0],
+                },
+            },
+            "referral": {
+                "referralCode": referral[0][0],
+                "affiliate": referral[0][1],
+                "trader": referral[0][2],
+                "totalRebateFactor": referral[0][3],
+                "traderDiscountFactor": referral[0][4],
+                "totalRebateAmount": referral[0][5],
+                "traderDiscountAmount": referral[0][6],
+                "affiliateRewardAmount": referral[0][7],
+            },
+            "fees": {
+                "fundingFeeAmount": referral[1][0],
+                "claimableLongTokenAmount": referral[1][1],
+                "claimableShortTokenAmount": referral[1][2],
+                "latestFundingFeeAmountPerSize": referral[1][3],
+                "latestLongTokenClaimableFundingAmountPerSize": referral[1][4],
+                "latestShortTokenClaimableFundingAmountPerSize": referral[1][5],
+            },
+            "borrowing": {
+                "borrowingFeeUsd": referral[2][0],
+                "borrowingFeeAmount": referral[2][1],
+                "borrowingFeeReceiverFactor": referral[2][2],
+                "borrowingFeeAmountForFeeReceiver": referral[2][3],
+            },
+            "ui": {
+                "uiFeeReceiver": referral[3][0],
+                "uiFeeReceiverFactor": referral[3][1],
+                "uiFeeAmount": referral[3][2],
+            },
+            "collateralTokenPrice": {
+                "min": referral[4][0],
+                "max": referral[4][1],
+            },
+            "positionFeeFactor": referral[5],
+            "protocolFeeAmount": referral[6],
+            "positionFeeReceiverFactor": referral[7],
+            "feeReceiverAmount": referral[8],
+            "feeAmountForPool": referral[9],
+            "positionFeeAmountForPool": referral[10],
+            "positionFeeAmount": referral[11],
+            "totalCostAmountExcludingFunding": referral[12],
+            "totalCostAmount": referral[13],
+            "basePnlUsd": base_pnl_usd,
+            "uncappedBasePnlUsd": uncapped_base_pnl_usd,
+            "pnlAfterPriceImpactUsd": pnl_after_price_impact_usd,
+            "percent_profit": (
+                (
+                    1 - (mark_price / entry_price)
+                ) * leverage
+            ) * -100,
+            "market_symbol": (
+                data_obj.markets.info[position[0][1]]['market_symbol'],
+            ),
+            "leverage": leverage,
+            "collateral_token": chain_tokens[position[0][2]]['symbol'],
+            "position_size": position[1][0] / 10**30,
+            "size_in_tokens": position[1][1],
+            "entry_price": (
+                (
+                    position[1][0] / position[1][1]
+                ) / 10 ** (
+                    30 - chain_tokens[
+                        market_info['index_token_address']
+                    ]['decimals']
+                )
+            ),
+            "inital_collateral_amount": position[1][2],
+            "inital_collateral_amount_usd": (
+                position[1][2]
+                / 10 ** chain_tokens[position[0][2]]['decimals'],
+            ),
+            "mark_price": mark_price
+        }
+        # print("\n", position_dict["position"]["numbers"]["sizeInUsd"])
+        # print("\n basePnlUsd", position_dict["basePnlUsd"], " \n   uncappedBasePnlUsd", position_dict["uncappedBasePnlUsd"],
+        #       "\n pnlAfterPriceImpactUsd", position_dict["pnlAfterPriceImpactUsd"], "\n")
+        # result.append(position_dict)
+        return(position_dict)
+    # return result
+
+
+def getPositionsData(config, wallet_address=None, market_address=None):
+    
+    data_obj._get_token_addresses(market_address)
+    market_info = data_obj.markets.get_available_markets()[market_address]
+    index_token_address = market_info["index_token_address"]
+    output = [data_obj._get_oracle_prices(market_address,
+                                          index_token_address,
+                                          return_tuple=True)]
+    hex_data = accountPositionListKey(wallet_address)
+    
+    
+    datastore_obj = get_datastore_contract(config)
+
+    position_keys = datastore_obj.functions.getBytes32ValuesAt(hex_data, 0, 1000).call()
+    
+    reader_obj = get_reader_contract(config)
+    
+    positions_dict = {}
+
+    for i in range(len(position_keys)):      
+        account_positions_list_raw = reader_obj.functions.getAccountPositionInfoList(
+            "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8", "0xe6fab3F0c7199b0d34d7FbE83394fc0e0D06e99d", [position_keys[i]], output, wallet_address).call()
+
+        account_positions_list = transform_to_dict(account_positions_list_raw)
+        
+        positions_dict[str(i)] = account_positions_list
+    
+    return positions_dict
+
+# if __name__=="__main__":
+    
+
