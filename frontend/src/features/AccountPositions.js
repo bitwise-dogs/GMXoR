@@ -4,6 +4,11 @@ import { ethers } from "ethers";
 import Position from "../shared/AccountUnits/Position";
 import getTokenName from "../shared/scripts/getTokenName";
 import axios from "axios";
+import {
+  formatPnl,
+  formatPrice,
+  formatRawPrice,
+} from "../shared/scripts/StringFormatting";
 
 function AccountPositions(props) {
   const [positionsDataRaw, setPositionsDataRaw] = useState(null);
@@ -68,11 +73,16 @@ function AccountPositions(props) {
             : "+";
         position_copy[3] =
           pnlSign +
-          updPositionsDataRaw["data"][i]["percent_profit"]
-            .toString()
-            .slice(0, 5) +
-          "%";
+          formatPnl(
+            updPositionsDataRaw["data"][i]["percent_profit"].toString()
+          );
 
+        position_copy[4] = formatPrice(
+          updPositionsDataRaw["data"][i]["entry_price"].toString()
+        );
+        position_copy[5] = formatPrice(
+          updPositionsDataRaw["data"][i]["mark_price"].toString()
+        );
         positions_copy.push(position_copy);
       }
       setPositions(positions_copy);
@@ -86,9 +96,7 @@ function AccountPositions(props) {
           positionsDataFormatted.push([]);
 
           let balance = positionsDataRaw[i][1][0].toString();
-          positionsDataFormatted[i].push(
-            balance.slice(0, -30) + "." + balance.slice(-30, -28) + "  $"
-          );
+          positionsDataFormatted[i].push(formatRawPrice(balance));
 
           if (positionsDataRaw[0][2][0] == false) {
             positionsDataFormatted[i].push("short");
@@ -96,6 +104,8 @@ function AccountPositions(props) {
             positionsDataFormatted[i].push("long");
           }
 
+          positionsDataFormatted[i].push("Загрузка...");
+          positionsDataFormatted[i].push("Загрузка...");
           positionsDataFormatted[i].push("Загрузка...");
           positionsDataFormatted[i].push("Загрузка...");
         }
@@ -165,6 +175,8 @@ function AccountPositions(props) {
               <th>Size</th>
               <th>Market</th>
               <th>PnL</th>
+              <th>Entry price</th>
+              <th>Mark price</th>
             </tr>
           </thead>
           <tbody>{resultPositions}</tbody>
