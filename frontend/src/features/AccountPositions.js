@@ -59,15 +59,9 @@ function AccountPositions(props) {
       for (let i = 0; i < positions.length; i++) {
         position_copy = positions[i].slice();
 
-        const pnlSign =
-          updPositionsDataRaw["data"][i]["basePnlUsd"].toString()[0] === "-"
-            ? "-"
-            : "+";
-        position_copy[3] =
-          pnlSign +
-          formatPnl(
-            updPositionsDataRaw["data"][i]["percent_profit"].toString()
-          );
+        position_copy[3] = formatPnl(
+          updPositionsDataRaw["data"][i]["percent_profit"].toString()
+        );
 
         position_copy[4] = formatPrice(
           updPositionsDataRaw["data"][i]["entry_price"].toString()
