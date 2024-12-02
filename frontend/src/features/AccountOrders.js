@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Order from "../shared/AccountUnits/Order";
+import getOrderType from "../shared/scripts/getOrderType";
 
 function AccountOrders(props) {
   const [ordersDataRaw, setOrdersDataRaw] = useState(null);
@@ -48,7 +49,8 @@ function AccountOrders(props) {
             balance.slice(0, -30) + "." + balance.slice(-30, -28) + "  $"
           );
 
-          ordersDataFormatted[i].push(ordersDataRaw[i][1][0].toString());
+          // ordersDataFormatted[i].push(getOrderType(ordersDataRaw[i][1][0].toString()));
+          ordersDataFormatted[i].push(getOrderType(ordersDataRaw[i][1][0].toString()));
         }
       }
     })();
