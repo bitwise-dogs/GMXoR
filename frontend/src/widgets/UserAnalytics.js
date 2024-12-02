@@ -34,7 +34,7 @@ const UserAnalytics = () => {
           Enter
         </Button>
       </div>
-      <AccountGenerals />
+      <AccountGenerals account = {account}/>
       <AccountPositions account={account} datastore={datastore} />
       <AccountOrders account={account} datastore={datastore} />
     </div>
