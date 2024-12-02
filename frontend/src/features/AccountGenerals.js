@@ -17,6 +17,7 @@ function AccountGenerals(props) {
       <div className="charts">
         <Chart xAxis={xAxis} series={series1} />
         <Chart xAxis={xAxis} series={series2} />
+        <Chart xAxis={xAxis} series={series1} />
       </div>
     </div>
   );

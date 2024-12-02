@@ -101,7 +101,7 @@ body {
 
 .block_wrapper {
   padding: 5px 25px;
-  margin: 15px 0;
+  margin: 10px 0;
   /* background-color: #414141; */
   background-color: #183d3d;
   border-radius: 25px;
@@ -109,7 +109,7 @@ body {
 
 .block {
   width: 100%;
-  margin: 30px 0;
+  margin: 10px 0;
   /* background-color: #525252; */
   border: 2px solid #4b837e;
   /* background-color: #344C64; */
@@ -143,5 +143,8 @@ body {
   align-items: center;
   border: 1px solid #dbe0e6;
   background-color: #335353;
-  padding: 10px 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
 }
+
