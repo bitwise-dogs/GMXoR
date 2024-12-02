@@ -2,7 +2,8 @@ import React from "react";
 import { useId, useState } from "react";
 import AccountPositions from "../features/AccountPositions";
 import AccountOrders from "../features/AccountOrders";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
+import AccountGenerals from "../features/AccountGenerals";
 
 const UserAnalytics = () => {
   const datastore = "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8";
@@ -22,14 +23,18 @@ const UserAnalytics = () => {
 
       <div className="input_wrapper">
         {/* <label htmlFor={id}>Wallet address:</label> */}
-        <input className="input"
+        <input
+          className="input"
           placeholder="Wallet Address"
           id={id}
           value={input}
           onInput={(e) => setInput(e.target.value)}
         />
-        <Button onClick={updateAccount} variant='outlined' color="e7e7ec">Enter</Button>
+        <Button onClick={updateAccount} variant="outlined" color="e7e7ec">
+          Enter
+        </Button>
       </div>
+      <AccountGenerals />
       <AccountPositions account={account} datastore={datastore} />
       <AccountOrders account={account} datastore={datastore} />
     </div>

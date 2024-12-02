@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap");
 
-*{
-  box-sizing:border-box;
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -9,16 +9,15 @@ body {
   font-weight: 300;
   color: #dbe0e6;
   font-style: normal;
-  background-color: #040D12;
+  background-color: #040d12;
   margin: 0;
 }
 
 .wrapper {
   height: 100vh;
   display: grid;
-  grid-template-rows: 1fr auto ;
+  grid-template-rows: 1fr auto;
 }
-
 
 .main_container {
   display: flex;
@@ -45,7 +44,7 @@ body {
   display: flex;
   justify-content: center;
   padding: 5px 25px;
-  background-color: #183D3D;
+  background-color: #183d3d;
   -webkit-box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
   -moz-box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
   box-shadow: 0px 0px 100px 4px rgba(4, 13, 18, 0.8);
@@ -63,7 +62,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #183D3D;
+  background-color: #183d3d;
   margin-top: 15px;
 }
 
@@ -85,7 +84,7 @@ body {
 
 .input {
   /* background-color: #313131; */
-  background-color: #183D3D;
+  background-color: #183d3d;
   border: #e7e7ec 1px solid;
   border-radius: 5px;
   padding: 10px 8px;
@@ -98,14 +97,13 @@ body {
   display: flex;
   flex-flow: row;
   align-items: center;
-
 }
 
 .block_wrapper {
   padding: 5px 25px;
   margin: 15px 0;
   /* background-color: #414141; */
-  background-color: #183D3D;
+  background-color: #183d3d;
   border-radius: 25px;
 }
 
@@ -119,24 +117,31 @@ body {
   padding: 2px 15px;
 }
 
-.table  {
+.table {
   width: 100%;
   text-align: left;
   /* border: 1px solid #dbe0e6; */
-	border-collapse: collapse;
+  border-collapse: collapse;
   margin-bottom: 20px;
   border-radius: 15px;
 }
 
-.table th  {
+.table th {
   border: 1px solid #dbe0e6;
   background-color: #335353;
   padding: 10px 15px;
 }
 
-.table td  {
+.table td {
   border: 1px solid #dbe0e6;
   padding: 10px 15px;
-} 
+}
 
-
+.charts {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  border: 1px solid #dbe0e6;
+  background-color: #335353;
+  padding: 10px 15px;
+}
