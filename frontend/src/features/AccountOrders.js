@@ -39,6 +39,7 @@ function AccountOrders(props) {
   useEffect(() => {
     (async () => {
       if (ordersDataRaw) {
+        console.log(ordersDataRaw);
         for (let i = 0; i < ordersDataRaw.length; i++) {
           ordersDataFormatted.push([]);
 
@@ -68,7 +69,7 @@ function AccountOrders(props) {
   return (
     <div className="block">
       <h2>Active orders</h2>
-      {ordersDataRaw ? 
+      {ordersDataRaw ? (
         <table className="table">
           <thead>
             <tr>
@@ -76,10 +77,11 @@ function AccountOrders(props) {
               <th>Order type</th>
             </tr>
           </thead>
-          <tbody>
-            {resultOrders}
-          </tbody>
-        </table> : <p>Загрузка...</p>}
+          <tbody>{resultOrders}</tbody>
+        </table>
+      ) : (
+        <p>Загрузка...</p>
+      )}
     </div>
   );
 }

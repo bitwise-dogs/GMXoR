@@ -6,9 +6,8 @@ const Position = (props) => {
 
   return (
     <tr key={index}>
-      <td>{element[1]}</td>
+      <td><b>{element[2]}</b> / {element[1]}</td>
       <td>{element[0]}</td>
-      <td>{element[2]}</td>
       <td>{element[3]}</td>
       <td>{element[4]}</td>
       <td>{element[5]}</td>

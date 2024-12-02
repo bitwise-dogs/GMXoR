@@ -91,9 +91,9 @@ function AccountPositions(props) {
           positionsDataFormatted[i].push(formatRawPrice(balance));
 
           if (positionsDataRaw[0][2][0] === false) {
-            positionsDataFormatted[i].push("short");
+            positionsDataFormatted[i].push("SHORT");
           } else {
-            positionsDataFormatted[i].push("long");
+            positionsDataFormatted[i].push("LONG");
           }
 
           positionsDataFormatted[i].push("Загрузка...");
@@ -163,9 +163,8 @@ function AccountPositions(props) {
         <table className="table">
           <thead>
             <tr>
-              <th>Position type</th>
+              <th>Position</th>            
               <th>Size</th>
-              <th>Market</th>
               <th>PnL</th>
               <th>Entry price</th>
               <th>Mark price</th>
