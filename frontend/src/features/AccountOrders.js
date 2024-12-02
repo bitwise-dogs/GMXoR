@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Order from "../shared/AccountUnits/Order";
+import getOrderType from "../shared/scripts/getOrderType";
 import {
   formatRawPrice,
   formatPrice,
@@ -51,11 +52,13 @@ function AccountOrders(props) {
           const sizeUsd = ordersDataRaw[i][1][2].toString();
           ordersDataFormatted[i].push(formatRawPrice(sizeUsd)); //размер в usd
 
-          ordersDataFormatted[i].push(ordersDataRaw[i][1][0].toString()); //тип ордера
+          ordersDataFormatted[i].push(
+            getOrderType(ordersDataRaw[i][1][0].toString())
+          ); //тип ордера
 
-          const triggerPrice = ordersDataRaw[i][1][4].toString();
+          const triggerPrice = ordersDataRaw[i][1][4].toString().slice(0,-12);
           const isTrigger = true;
-          ordersDataFormatted[i].push(formatRawPrice(triggerPrice, isTrigger)); //размер тригера
+          ordersDataFormatted[i].push(triggerPrice); //размер тригера
         }
       }
     })();
