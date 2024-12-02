@@ -1,5 +1,7 @@
-function formatRawPrice(input) {
-  const inputUsd = input.slice(0, -30) + "." + input.slice(-30, -28);
+function formatRawPrice(input, isTrigger = false) {
+  const inputUsd = isTrigger
+    ? input.slice(0, -30) + "." + input.slice(-30, -28)
+    : input.slice(0, -30) + "." + input.slice(-30, -28);
   const [integerPart, decimalPart = ""] = inputUsd.split(".");
 
   // Форматируем целую часть с разделением тысяч
@@ -13,7 +15,9 @@ function formatRawPrice(input) {
 }
 
 function formatPnl(input) {
-  const formattedPnl = input.replace(/^(\d+\.\d{0,2})\d*$/, "$1");
+  const pnlSign = input.charAt(0) === "-" ? "-" : "+";
+  input = input.replace("-", "");
+  const formattedPnl = pnlSign + input.replace(/^(\d+\.\d{0,2})\d*$/, "$1");
   return `${formattedPnl}%`;
 }
 
@@ -29,4 +33,7 @@ function formatPrice(input) {
   // Собираем результат
   return `$${formattedInteger}.${formattedDecimal}`;
 }
-export { formatRawPrice, formatPnl, formatPrice };
+
+function formatTriggerPrice(input) {}
+
+export { formatRawPrice, formatPnl, formatPrice, formatTriggerPrice };

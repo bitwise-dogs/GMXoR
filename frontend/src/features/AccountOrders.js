@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import contract from "../shared/contracts/readerContract";
 import { ethers } from "ethers";
 import Order from "../shared/AccountUnits/Order";
-import getOrderType from "../shared/scripts/getOrderType";
+import {
+  formatRawPrice,
+  formatPrice,
+  formatTriggerPrice,
+} from "../shared/scripts/StringFormatting";
 
 function AccountOrders(props) {
   const [ordersDataRaw, setOrdersDataRaw] = useState(null);
@@ -44,13 +48,14 @@ function AccountOrders(props) {
         for (let i = 0; i < ordersDataRaw.length; i++) {
           ordersDataFormatted.push([]);
 
-          let balance = ordersDataRaw[i][1][2].toString();
-          ordersDataFormatted[i].push(
-            balance.slice(0, -30) + "." + balance.slice(-30, -28) + "  $"
-          );
+          const sizeUsd = ordersDataRaw[i][1][2].toString();
+          ordersDataFormatted[i].push(formatRawPrice(sizeUsd)); //размер в usd
 
-          // ordersDataFormatted[i].push(getOrderType(ordersDataRaw[i][1][0].toString()));
-          ordersDataFormatted[i].push(getOrderType(ordersDataRaw[i][1][0].toString()));
+          ordersDataFormatted[i].push(ordersDataRaw[i][1][0].toString()); //тип ордера
+
+          const triggerPrice = ordersDataRaw[i][1][4].toString();
+          const isTrigger = true;
+          ordersDataFormatted[i].push(formatRawPrice(triggerPrice, isTrigger)); //размер тригера
         }
       }
     })();
@@ -77,6 +82,7 @@ function AccountOrders(props) {
             <tr>
               <th>Size</th>
               <th>Order type</th>
+              <th>Trigger price</th>
             </tr>
           </thead>
           <tbody>{resultOrders}</tbody>
