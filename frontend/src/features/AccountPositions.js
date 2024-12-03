@@ -82,9 +82,11 @@ function AccountPositions(props) {
   useEffect(() => {
     if (updPositionsDataRaw) {
       let averagePNL_copy = averagePNL.slice();
+
       averagePNL_copy.push(
         getAveragePNL(updPositionsDataRaw, positions.length)
       );
+
       setAveragePNL(averagePNL_copy);
       props.setAveragePNL(averagePNL_copy);
 

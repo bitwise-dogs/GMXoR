@@ -5,6 +5,16 @@ import { LineChart } from "@mui/x-charts";
 const Chart = (props) => {
   return (
     <LineChart
+      sx={{
+        "& .MuiChartsAxis-tick, .MuiChartsAxis-line": {
+          stroke: "#ffffff !important",
+          strokeWidth: 1,
+        },
+        "& .MuiChartsAxis-tickLabel": {
+          fill: "#ffffff !important",
+          fontSize: "12px",
+        },
+      }}
       xAxis={[
         {
           data: props.xAxis,
@@ -15,12 +25,6 @@ const Chart = (props) => {
           },
         },
       ]}
-      sx={{
-        "& .MuiChartsAxis-tick, .MuiChartsAxis-line": {
-          stroke: "#ffffff",
-          strokeWidth: 1,
-        },
-      }}
       series={[
         {
           data: props.series,

@@ -19,6 +19,7 @@ const UserAnalytics = () => {
   }
   const [averagePNL, setAveragePNL] = useState([]);
   const [averagePNLxAxis, setAveragePNLxAxis] = useState([]);
+  const [currentAveragePnl, setCurrentAveragePnl] = useState(null);
 
   return (
     <div className="block_wrapper">
@@ -40,6 +41,7 @@ const UserAnalytics = () => {
         account={account}
         averagePNL={averagePNL}
         averagePNLxAxis={averagePNLxAxis}
+        currentAveragePnl={currentAveragePnl}
       />
       <AccountPositions
         account={account}

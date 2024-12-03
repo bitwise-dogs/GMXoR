@@ -14,7 +14,11 @@ function formatRawPrice(input, isTrigger = false) {
   return `$${formattedInteger}.${formattedDecimal}`;
 }
 
-function formatPnl(input) {
+function formatPnl(input, isCurrent = false) {
+  if (isCurrent) {
+    return `${input.replace(/^(\d+\.\d{0,2})\d*$/, "$1")}%`;
+  }
+
   const pnlSign = input.charAt(0) === "-" ? "-" : "+";
   input = input.replace("-", "");
   const formattedPnl = pnlSign + input.replace(/^(\d+\.\d{0,2})\d*$/, "$1");
