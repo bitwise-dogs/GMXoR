@@ -19,6 +19,7 @@ const UserAnalytics = () => {
   }
   const [averagePNL, setAveragePNL] = useState([]);
   const [averagePNLxAxis, setAveragePNLxAxis] = useState([]);
+  const [averageMarkPrice, setAverageMarkPrice] = useState([]);
   const [currentAveragePnl, setCurrentAveragePnl] = useState(null);
 
   return (
@@ -42,6 +43,7 @@ const UserAnalytics = () => {
         averagePNL={averagePNL}
         averagePNLxAxis={averagePNLxAxis}
         currentAveragePnl={currentAveragePnl}
+        averageMarkPrice={averageMarkPrice}
       />
       <AccountPositions
         account={account}
@@ -50,6 +52,8 @@ const UserAnalytics = () => {
         setAveragePNL={(data) => setAveragePNL(data)}
         averagePNLxAxis={averagePNLxAxis}
         setAveragePNLxAxis={(data) => setAveragePNLxAxis(data)}
+        averageMarkPrice={averageMarkPrice}
+        setAverageMarkPrice={(data) => setAverageMarkPrice(data)}
       />
       <AccountOrders account={account} datastore={datastore} />
     </div>

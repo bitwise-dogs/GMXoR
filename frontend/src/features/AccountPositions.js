@@ -10,6 +10,7 @@ import {
   formatRawPrice,
 } from "../shared/scripts/StringFormatting";
 import Chart from "../shared/AccountUnits/Chart";
+import getAverageMarkPrice from "../shared/scripts/getAverageMarkPrice";
 
 function AccountPositions(props) {
   const [positionsDataRaw, setPositionsDataRaw] = useState(null);
@@ -18,6 +19,8 @@ function AccountPositions(props) {
   const [tokensNames, setTokensNames] = useState(null);
   const [averagePNL, setAveragePNL] = useState([]);
   const [averagePNLxAxis, setAveragePNLxAxis] = useState([]);
+  const [averageMarkPrice, setAverageMarkPrice] = useState([]);
+  const [averageMarkPricexAxis, setAverageMarkPricexAxis] = useState([]);
 
   let positionsDataFormatted = [];
   let datastore = props.datastore;
@@ -74,7 +77,8 @@ function AccountPositions(props) {
           updPositionsDataRaw["data"][i]["mark_price"].toString()
         );
         position_copy[6] =
-          updPositionsDataRaw["data"][i]["leverage"].toString().slice(0,4);
+          updPositionsDataRaw["data"][i]["leverage"].toString().slice(0, 4) +
+          "x";
         positions_copy.push(position_copy);
       }
       setPositions(positions_copy);
@@ -96,6 +100,13 @@ function AccountPositions(props) {
       averagePNLxAxis_copy.push(averagePNL.length);
       setAveragePNLxAxis(averagePNLxAxis_copy);
       props.setAveragePNLxAxis(averagePNLxAxis_copy);
+
+      let averageMarkPrice_copy = averageMarkPrice.slice();
+      averageMarkPrice_copy.push(
+        getAverageMarkPrice(updPositionsDataRaw, positions.length)
+      );
+      setAverageMarkPrice(averageMarkPrice_copy);
+      props.setAverageMarkPrice(averageMarkPrice_copy);
     }
     const timeoutId = setTimeout(() => {
       axios

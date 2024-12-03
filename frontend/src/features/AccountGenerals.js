@@ -27,6 +27,7 @@ function AccountGenerals(props) {
         <h3> Account metrics: </h3>
         <ul>
           <li> CUR AVG PNL: {curAvgPnl}</li>
+          <li> CUR AVG MARK PRICE: {props.averageMarkPrice.length > 0 ? '$'+props.averageMarkPrice[props.averageMarkPrice.length-1].toString().slice(0,-9) : ''}</li>
         </ul>
       </div>
       <div className="charts">
@@ -35,8 +36,11 @@ function AccountGenerals(props) {
           series={props.averagePNL}
           label={"Mean Position Pnl"}
         />
-        <Chart xAxis={xAxis} series={series2} />
-        <Chart xAxis={xAxis} series={series1} />
+        <Chart
+          xAxis={props.averagePNLxAxis}
+          series={props.averageMarkPrice}
+          label={"Mean Mark Price"}
+        />
       </div>
     </div>
   );

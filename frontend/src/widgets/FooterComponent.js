@@ -15,7 +15,7 @@ function FooterComponent() {
         </div>
         <div className='contacts'>
             <div>info@bitwisedogs.com</div>
-            <div>+7 (777) 777 77 77</div>
+            <div>+7 (983) 442 38 55</div>
         </div>
         <h4>© 2024 bitwise dogs. All Rights Reserved.</h4>
     </div>
