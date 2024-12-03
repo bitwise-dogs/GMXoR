@@ -4,6 +4,7 @@ import AccountPositions from "../features/AccountPositions";
 import AccountOrders from "../features/AccountOrders";
 import Button from "@mui/material/Button";
 import AccountGenerals from "../features/AccountGenerals";
+import Chart from "../shared/AccountUnits/Chart";
 
 const UserAnalytics = () => {
   const datastore = "0xFD70de6b91282D8017aA4E741e9Ae325CAb992d8";
@@ -16,11 +17,12 @@ const UserAnalytics = () => {
   function updateAccount() {
     setAccount(input);
   }
+  const [averagePNL, setAveragePNL] = useState([]);
+  const [averagePNLxAxis, setAveragePNLxAxis] = useState([]);
 
   return (
     <div className="block_wrapper">
       <h2>Up-to-date information at the current address</h2>
-
       <div className="input_wrapper">
         {/* <label htmlFor={id}>Wallet address:</label> */}
         <input
@@ -34,8 +36,19 @@ const UserAnalytics = () => {
           Enter
         </Button>
       </div>
-      <AccountGenerals account = {account}/>
-      <AccountPositions account={account} datastore={datastore} />
+      <AccountGenerals
+        account={account}
+        averagePNL={averagePNL}
+        averagePNLxAxis={averagePNLxAxis}
+      />
+      <AccountPositions
+        account={account}
+        datastore={datastore}
+        averagePNL={averagePNL}
+        setAveragePNL={(data) => setAveragePNL(data)}
+        averagePNLxAxis={averagePNLxAxis}
+        setAveragePNLxAxis={(data) => setAveragePNLxAxis(data)}
+      />
       <AccountOrders account={account} datastore={datastore} />
     </div>
   );

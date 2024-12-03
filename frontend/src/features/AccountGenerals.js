@@ -15,7 +15,7 @@ function AccountGenerals(props) {
         <u>GMX V2 Arbitrum</u> information for account <b>{props.account}</b>
       </p>
       <div className="charts">
-        <Chart xAxis={xAxis} series={series1} />
+        <Chart xAxis={props.averagePNLxAxis} series={props.averagePNL} />
         <Chart xAxis={xAxis} series={series2} />
         <Chart xAxis={xAxis} series={series1} />
       </div>

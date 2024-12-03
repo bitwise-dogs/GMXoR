@@ -86,10 +86,12 @@ function AccountPositions(props) {
         getAveragePNL(updPositionsDataRaw, positions.length)
       );
       setAveragePNL(averagePNL_copy);
+      props.setAveragePNL(averagePNL_copy);
 
       let averagePNLxAxis_copy = averagePNLxAxis.slice();
       averagePNLxAxis_copy.push(averagePNL.length);
       setAveragePNLxAxis(averagePNLxAxis_copy);
+      props.setAveragePNLxAxis(averagePNLxAxis_copy);
     }
     const timeoutId = setTimeout(() => {
       axios
@@ -170,7 +172,6 @@ function AccountPositions(props) {
   return (
     <div className="block">
       <h2>Open positions</h2>
-      <Chart xAxis={averagePNLxAxis} series={averagePNL} />
       {/* {updPositionsDataRaw ? (
         <div>
           PnL нулевой позиции (Base PnL in USD):{" "}
