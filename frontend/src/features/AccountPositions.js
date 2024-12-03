@@ -73,6 +73,8 @@ function AccountPositions(props) {
         position_copy[5] = formatPrice(
           updPositionsDataRaw["data"][i]["mark_price"].toString()
         );
+        position_copy[6] =
+          updPositionsDataRaw["data"][i]["leverage"].toString().slice(0,4);
         positions_copy.push(position_copy);
       }
       setPositions(positions_copy);
