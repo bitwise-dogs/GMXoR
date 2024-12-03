@@ -3,17 +3,21 @@ import contract from "../shared/contracts/readerContract";
 import Position from "../shared/AccountUnits/Position";
 import getTokenName from "../shared/scripts/getTokenName";
 import axios from "axios";
+import getAveragePNL from "../shared/scripts/getAveragePNL";
 import {
   formatPnl,
   formatPrice,
   formatRawPrice,
 } from "../shared/scripts/StringFormatting";
+import Chart from "../shared/AccountUnits/Chart";
 
 function AccountPositions(props) {
   const [positionsDataRaw, setPositionsDataRaw] = useState(null);
   const [updPositionsDataRaw, setUpdPositionsDataRaw] = useState(null);
   const [positions, setPositions] = useState([[]]);
   const [tokensNames, setTokensNames] = useState(null);
+  const [averagePNL, setAveragePNL] = useState([]);
+  const [averagePNLxAxis, setAveragePNLxAxis] = useState([]);
 
   let positionsDataFormatted = [];
   let datastore = props.datastore;
@@ -73,6 +77,27 @@ function AccountPositions(props) {
       }
       setPositions(positions_copy);
     }
+  }, [updPositionsDataRaw]);
+
+  useEffect(() => {
+    if (updPositionsDataRaw) {
+      let averagePNL_copy = averagePNL.slice();
+      averagePNL_copy.push(
+        getAveragePNL(updPositionsDataRaw, positions.length)
+      );
+      setAveragePNL(averagePNL_copy);
+
+      let averagePNLxAxis_copy = averagePNLxAxis.slice();
+      averagePNLxAxis_copy.push(averagePNL.length);
+      setAveragePNLxAxis(averagePNLxAxis_copy);
+    }
+    const timeoutId = setTimeout(() => {
+      axios
+        .get(`http://127.0.0.1:8000/getPositionsData/${account}`)
+        .then((response) => {
+          setUpdPositionsDataRaw(response);
+        });
+    }, 4000);
   }, [updPositionsDataRaw]);
 
   useEffect(() => {
@@ -145,6 +170,7 @@ function AccountPositions(props) {
   return (
     <div className="block">
       <h2>Open positions</h2>
+      <Chart xAxis={averagePNLxAxis} series={averagePNL} />
       {/* {updPositionsDataRaw ? (
         <div>
           PnL нулевой позиции (Base PnL in USD):{" "}
@@ -157,7 +183,7 @@ function AccountPositions(props) {
         <table className="table">
           <thead>
             <tr>
-              <th>Position</th>            
+              <th>Position</th>
               <th>Size</th>
               <th>PnL</th>
               <th>Entry price</th>
