@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import contract from "../shared/contracts/readerContract";
-import { ethers } from "ethers";
 import Chart from "../shared/AccountUnits/Chart";
 
 function AccountGenerals(props) {
@@ -15,7 +13,11 @@ function AccountGenerals(props) {
         <u>GMX V2 Arbitrum</u> information for account <b>{props.account}</b>
       </p>
       <div className="charts">
-        <Chart xAxis={props.averagePNLxAxis} series={props.averagePNL} />
+        <Chart
+          xAxis={props.averagePNLxAxis}
+          series={props.averagePNL}
+          label={"Mean Position Pnl"}
+        />
         <Chart xAxis={xAxis} series={series2} />
         <Chart xAxis={xAxis} series={series1} />
       </div>
