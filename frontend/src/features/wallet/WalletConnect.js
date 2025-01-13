@@ -6,6 +6,11 @@ function WalletConnect() {
   const [connected, setConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
 
+  function copyAddress(event) {
+    navigator.clipboard.writeText(event.target.innerText);
+    alert("Copied the address: " + event.target.innerText);
+  }
+
   async function connectWallet() {
     if (!connected) {
       // Проверяем, что window.ethereum доступен
@@ -31,6 +36,7 @@ function WalletConnect() {
 
             setConnected(true);
             setWalletAddress(_walletAddress);
+
           } else {
             console.error("No accounts found.");
           }
@@ -52,7 +58,7 @@ function WalletConnect() {
   return (
     <div className='header_content'>
       <h2>GMX Analytics</h2>
-      <h4 className="wal-add">{walletAddress}</h4>
+      <h4 className="wal-add" onClick={copyAddress}>{walletAddress}</h4>
       <Button className="btn" onClick={connectWallet} variant="outlined" color='#e7e7ec'>
         {connected ? "Disconnect Wallet" : "Connect Wallet"}
       </Button>

@@ -12,11 +12,11 @@ function App() {
         <HeaderComponent />
       </div>
       <div className='content'>
-      <div className='main_container'>
-        <div className='container'>
-          <HomePage />
+        <div className='main_container'>
+          <div className='container'>
+            <HomePage />
+          </div>
         </div>
-      </div>
       </div>
       <div className='footer_wrapper'>
         <FooterComponent />
